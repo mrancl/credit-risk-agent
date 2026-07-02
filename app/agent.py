@@ -27,6 +27,7 @@ exposed to it as AgentTools. Guardrails live in app/agents/guardrails.py.
 """
 
 from google.adk.agents import Agent
+from google.adk.agents.context_cache_config import ContextCacheConfig
 from google.adk.apps import App
 from google.adk.models import Gemini
 from google.adk.tools.agent_tool import AgentTool
@@ -100,7 +101,7 @@ company_data_agent = Agent(
         "Collects public data about a Romanian company from the DemoANAF MCP "
         "connector: CUI resolution, company profile, and financials."
     ),
-    instruction=(
+    static_instruction=(
         "You are a data collection specialist. You only fetch data; you never "
         "assess risk or talk to the end user.\n"
         "1. If the request contains a company name instead of a CUI (fiscal code), "
@@ -127,7 +128,7 @@ risk_scoring_agent = Agent(
         "Scores the credit risk of a Romanian company from a collected data "
         "profile, using the deterministic in-house policy."
     ),
-    instruction=(
+    static_instruction=(
         "You are a credit risk scoring specialist. You receive a company "
         "identifier and a JSON company profile.\n"
         "Call evaluate_company_credit_risk_from_profile with the company "
@@ -145,7 +146,7 @@ report_writer_agent = Agent(
         "Writes the final credit-risk report for the end user from a "
         "structured risk assessment."
     ),
-    instruction=(
+    static_instruction=(
         "You are a reporting specialist. You receive a structured credit risk "
         "assessment (JSON) and the language the user wrote in.\n"
         "Write a concise, professional report in the user's language with: "
@@ -162,7 +163,7 @@ root_agent = Agent(
     name="root_agent",
     model=_make_model(),
     description="Coordinator of the credit-risk multi-agent system.",
-    instruction=(
+    static_instruction=(
         "You are the coordinator of a credit risk evaluation system for "
         "Romanian companies, backed by DemoANAF public data.\n"
         "SCOPE: you only handle requests about Romanian companies: credit risk "
@@ -199,4 +200,7 @@ root_agent = Agent(
 app = App(
     root_agent=root_agent,
     name="app",
+    # Cache the static prefix (system instruction + tool declarations) per
+    # agent across turns; skip caching for requests too small to benefit.
+    context_cache_config=ContextCacheConfig(min_tokens=2048),
 )

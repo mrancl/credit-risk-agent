@@ -20,12 +20,10 @@ from google.adk.models.llm_response import LlmResponse
 from google.genai import types
 
 BLOCKED_MESSAGE = (
-    "Cererea a fost blocată de guardrails: conține limbaj nepotrivit sau o "
-    "tentativă de manipulare a instrucțiunilor agentului. Reformulează "
-    "cererea, de exemplu: 'Evaluează riscul de credit pentru firma cu CUI "
-    "14399840'. / Request blocked by guardrails: it contains inappropriate "
-    "language or a prompt-injection attempt. Please rephrase your credit-risk "
-    "question."
+    "Request blocked by guardrails: it contains inappropriate language or an "
+    "attempt to manipulate the agent's instructions. Please rephrase your "
+    "request, for example: 'Evaluate the credit risk for the company with "
+    "CUI 14399840'."
 )
 
 # Matched with word boundaries on normalized (lowercase, no diacritics) text.

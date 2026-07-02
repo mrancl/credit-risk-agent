@@ -88,14 +88,30 @@ Example prompt:
 Evaluate credit risk for Romanian company CUI RO18547290. Return score, recommendation, confidence, and evidence.
 ```
 
+## DemoANAF MCP authentication
+
+The DemoANAF MCP server is an OAuth 2.1 protected resource. Authorize once:
+
+```bash
+python3 scripts/demoanaf_login.py
+```
+
+This registers a client dynamically, opens the browser for the DemoANAF
+consent page (you need a demoanaf.ro account), and saves tokens to
+`~/.config/demoanaf/tokens.json` (override with `DEMOANAF_TOKEN_FILE`).
+After that, the agent refreshes access tokens automatically via
+`app/integrations/demoanaf_auth.py`. Setting `MCP_AUTH_TOKEN` bypasses the
+token file entirely.
+
 ## Configuration
 
 Set these environment variables when needed:
 
 - `MCP_SERVER_URL` (default: `https://demoanaf.ro/mcp`)
-- `MCP_TIMEOUT_SECONDS` (default: `6`)
-- `MCP_TOOL_NAME` (default: `company_profile`)
-- `MCP_AUTH_TOKEN` (optional bearer token for remote MCP servers)
+- `MCP_TIMEOUT_SECONDS` (default: `15`)
+- `MCP_TOOL_NAMES` (default: `search_company,get_company,get_company_financials`; comma-separated, empty exposes all server tools)
+- `MCP_AUTH_TOKEN` (optional static bearer token; takes precedence over the OAuth token file)
+- `DEMOANAF_TOKEN_FILE` (default: `~/.config/demoanaf/tokens.json`)
 - `SCORE_THRESHOLD_APPROVE` (default: `70`)
 - `SCORE_THRESHOLD_REVIEW` (default: `40`)
 

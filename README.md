@@ -3,6 +3,22 @@
 Multi-agent credit-risk evaluator for Romanian companies, implemented with ADK 2.0.
 Primary company data source: `https://demoanaf.ro/mcp`.
 
+## Architecture
+
+```
+root_agent (coordinator)
+│  guardrails: guard_user_input (prompt injection + profanity, before model)
+│              scrub_model_output (profanity masking, after model)
+├── company_data_agent    # DemoANAF MCP: search_company, get_company, get_company_financials
+│      guardrail: guard_tool_args (CUI validation/normalization, before tool)
+├── risk_scoring_agent    # deterministic policy via evaluate_company_credit_risk_from_profile
+└── report_writer_agent   # final user-facing report, user's language
+```
+
+Specialists are exposed to the coordinator as `AgentTool`s; the coordinator
+holds no data or scoring tools itself. Guardrails live in
+`app/agents/guardrails.py` and are covered by `tests/unit/test_guardrails.py`.
+
 ## Project Structure
 
 ```

@@ -1,0 +1,26 @@
+{
+  "eval_cases": [
+    {
+      "eval_case_id": "ro_company_risk_by_cui",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Evaluate credit risk for Romanian company CUI RO18547290. Return score, recommendation, confidence, and key evidence."
+          }
+        ]
+      }
+    },
+    {
+      "eval_case_id": "ro_company_risk_partial_data",
+      "prompt": {
+        "role": "user",
+        "parts": [
+          {
+            "text": "Assess risk for company identifier J40/1234/2019 and explicitly call out missing data if fields are unavailable."
+          }
+        ]
+      }
+    }
+  ]
+}

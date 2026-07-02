@@ -64,12 +64,17 @@ def evaluate_company_credit_risk_from_profile(
     final = {
         "company_identifier": company_identifier,
         "legal_name": result.get("legal_name"),
+        "caen_code": profile.caen_code,
         "score": result["score"],
         "recommendation": result["recommendation"],
         "confidence": result["confidence"],
         "quality_note": quality_note,
         "factors": result["factors"],
         "evidence": result["evidence"],
+        "financial_history": [year.model_dump() for year in profile.financial_history],
+        "public_contracts": (
+            profile.public_contracts.model_dump() if profile.public_contracts else None
+        ),
         "audit": result["audit"],
     }
     return json.dumps(final, ensure_ascii=True)

@@ -8,7 +8,9 @@ class Settings:
     mcp_timeout_seconds: float = float(os.getenv("MCP_TIMEOUT_SECONDS", "15"))
     # Comma-separated tool names exposed to the agent; empty means all tools.
     mcp_tool_names: str = os.getenv(
-        "MCP_TOOL_NAMES", "search_company,get_company,get_company_financials"
+        "MCP_TOOL_NAMES",
+        "search_company,get_company,get_company_financials,"
+        "check_company_contracts,list_company_contracts,top_companies_by_slice_year",
     )
     mcp_auth_token: str = os.getenv("MCP_AUTH_TOKEN", "")
 

@@ -9,10 +9,12 @@ Primary company data source: `https://demoanaf.ro/mcp`.
 root_agent (coordinator)
 │  guardrails: guard_user_input (prompt injection + profanity, before model)
 │              scrub_model_output (profanity masking, after model)
-├── company_data_agent    # DemoANAF MCP: search_company, get_company, get_company_financials
+├── company_data_agent    # DemoANAF MCP: search_company, get_company, get_company_financials,
+│                         # check_company_contracts, list_company_contracts
 │      guardrail: guard_tool_args (CUI validation/normalization, before tool)
-├── risk_scoring_agent    # deterministic policy via evaluate_company_credit_risk_from_profile
-└── report_writer_agent   # final user-facing report, user's language
+├── risk_scoring_agent    # deterministic policy: trends, ratios, contracts exposure
+├── sector_analyst_agent  # CAEN peer benchmark via top_companies_by_slice_year
+└── report_writer_agent   # standard 8-section report, user's language
 ```
 
 Specialists are exposed to the coordinator as `AgentTool`s; the coordinator

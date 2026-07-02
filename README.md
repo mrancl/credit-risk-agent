@@ -128,6 +128,7 @@ Set these environment variables when needed:
 - `MCP_TOOL_NAMES` (default: `search_company,get_company,get_company_financials`; comma-separated, empty exposes all server tools)
 - `MCP_AUTH_TOKEN` (optional static bearer token; takes precedence over the OAuth token file)
 - `DEMOANAF_TOKEN_FILE` (default: `~/.config/demoanaf/tokens.json`)
+- `GUARDRAIL_MODEL` (default: `gemini-flash-latest`; model used by the LLM moderation classifier)
 - `SCORE_THRESHOLD_APPROVE` (default: `70`)
 - `SCORE_THRESHOLD_REVIEW` (default: `40`)
 

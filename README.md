@@ -24,7 +24,7 @@ holds no data or scoring tools itself. Guardrails live in
 ## Project Structure
 
 ```
-my-agent/
+credit-risk-agent/
 ├── app/         # Core agent code
 │   ├── agent.py               # Main agent logic
 │   └── app_utils/             # App utilities and helpers

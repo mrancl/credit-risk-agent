@@ -7,6 +7,10 @@ stored refresh token when they near expiry.
 
 A static ``MCP_AUTH_TOKEN`` environment variable, when set, takes precedence
 over the token file (useful for tests or pre-provisioned tokens).
+
+For deployed environments, the full ``tokens.json`` content can be supplied as
+``DEMOANAF_TOKENS_JSON`` (e.g. from Secret Manager). The refresh token inside
+it is used to keep the access token valid while the process is running.
 """
 
 import json
@@ -33,7 +37,23 @@ def _token_file() -> Path:
     )
 
 
-def _refresh(tokens: dict) -> dict:
+def _load_tokens() -> tuple[dict, Path | None]:
+    """Load token set from env var or file. Returns (tokens, file_or_none)."""
+    tokens_json = os.getenv("DEMOANAF_TOKENS_JSON", "")
+    if tokens_json:
+        return json.loads(tokens_json), None
+
+    token_file = _token_file()
+    if token_file.exists():
+        return json.loads(token_file.read_text()), token_file
+
+    raise RuntimeError(
+        "No DemoANAF tokens available. Set DEMOANAF_TOKENS_JSON, "
+        f"or run once: python3 scripts/demoanaf_login.py (expected {token_file})"
+    )
+
+
+def _refresh(tokens: dict, token_file: Path | None) -> dict:
     refresh_token = tokens.get("refresh_token")
     if not refresh_token:
         raise RuntimeError(
@@ -59,9 +79,9 @@ def _refresh(tokens: dict) -> dict:
     if payload.get("refresh_token"):
         tokens["refresh_token"] = payload["refresh_token"]
 
-    token_file = _token_file()
-    token_file.parent.mkdir(parents=True, exist_ok=True)
-    token_file.write_text(json.dumps(tokens, indent=2))
+    if token_file is not None:
+        token_file.parent.mkdir(parents=True, exist_ok=True)
+        token_file.write_text(json.dumps(tokens, indent=2))
     return tokens
 
 
@@ -71,12 +91,11 @@ def get_access_token() -> str:
     if static_token:
         return static_token
 
-    token_file = _token_file()
-    if not token_file.exists():
-        raise RuntimeError(
-            f"No DemoANAF tokens at {token_file}. "
-            "Run once: python3 scripts/demoanaf_login.py"
-        )
+    with _lock:
+        tokens, token_file = _load_tokens()
+        if tokens.get("expires_at", 0) - _EXPIRY_LEEWAY_SECONDS <= time.time():
+            tokens = _refresh(tokens, token_file)
+        return tokens["access_token"]
 
     with _lock:
         tokens = json.loads(token_file.read_text())

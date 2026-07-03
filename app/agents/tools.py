@@ -48,6 +48,11 @@ def evaluate_company_credit_risk_from_profile(
     company_profile: dict[str, Any] | str,
 ) -> str:
     """Score credit risk using a company profile returned by an MCP tool."""
+    # company_identifier may arrive as a bare int (e.g. a CUI echoed back as a
+    # JSON number by an upstream LLM/tool) when called directly from code
+    # rather than via LLM function-calling, which would otherwise coerce it
+    # to the declared string type.
+    company_identifier = str(company_identifier)
     raw_payload = _extract_payload_dict(company_profile)
     profile = normalize_company_payload(company_identifier=company_identifier, raw_payload=raw_payload)
     assessment = evaluate_credit_risk(profile)
